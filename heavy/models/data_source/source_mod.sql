@@ -1,9 +1,11 @@
 {{ config(materialized='table') }}
 
 with source_sales as (
-        select "Deal_Value" as k  from {{ source("adludio", "sales_table") }}
+
+        
+    SELECT AVG("Deal_Value") AS avg_value_perweek FROM {{ source("adludio", "sales_table") }}
     
-        WHERE "Deal_created_at" LIKE '%2019%'
+               GROUP BY DATE_PART('week', CAST("Deal_created_at" AS DATE))
     ),
 
 final as (
@@ -12,5 +14,6 @@ final as (
 
 
 select * from final
-    
 
+
+  

@@ -9,3 +9,5 @@ sources:
     tables:
       - name: sales_table
         description: "decription about the table"
+        
+    
