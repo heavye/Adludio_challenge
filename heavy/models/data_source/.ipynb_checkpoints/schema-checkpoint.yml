@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: adludio
+    description: "A sales table provided"
+    database: adludio
+    schema: public
+    
+    tables:
+      - name: sales_table
+        description: "decription about the table"
