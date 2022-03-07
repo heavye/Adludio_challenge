@@ -1,24 +1,31 @@
-{{ config(materialized='table') }}
+ {{ config(materialized='table') }}
 
 with source_sales as (
 
+       
+        SELECT 
+
+            year, quarter,
+            
+            AVG("sum_value_per_week") AS avg_value_per_quarter, 
+            AVG("sum_email_per_week") AS avg_emails_per_quarter  
+
+        FROM (
+                SELECT                
+                EXTRACT(week FROM CAST("Deal_created_at" AS DATE)) as week,
+                EXTRACT(quarter FROM CAST("Deal_created_at" AS DATE)) as quarter,
+                EXTRACT(year FROM CAST("Deal_created_at" AS DATE)) as year,
+            
+                SUM("Deal_Value") AS sum_value_per_week,
+                SUM("Deal_Email_messages_count") AS sum_email_per_week
+
+                FROM sales_table 
+            group by quarter, year, week
+            ) as h
         
-    SELECT 
-        DATE_PART('week', CAST("Deal_created_at" AS DATE)) as week,
-        DATE_PART('year', CAST("Deal_created_at" AS DATE)) as year,
-        DATE_PART('month', CAST("Deal_created_at" AS DATE)) as month,
+        GROUP BY year, quarter
 
-        COUNT("Deal_created_at") as No_of_deal_created,
-
-        SUM("Deal_Value") AS sum_value_per_week, 
-        SUM("Deal_Email_messages_count") AS sum_emails_per_week  
-    
-    FROM {{ source("adludio", "sales_table") }}
-    
-    GROUP BY year , month, week
-             
-
-    ORDER BY week
+        ORDER BY year, quarter
     ),
 
 final as (
